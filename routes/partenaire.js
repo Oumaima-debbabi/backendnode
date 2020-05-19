@@ -1,14 +1,6 @@
 const router = require("express").Router();
 const verify = require("./verifyToken");
-const Partenaire = require("../model/Partenaire");     sujet:req.body.sujet,
-  besoin:req.body.besoin,
-  nombre_preson:req.body.nombre_preson,
-  nom_res:req.body.nom_res,
-  lieu:req.body.lieu,
-  date:req.body.date,
-  datefin:req.body.datefin,
-  type:req.body.type
-// // Add New secteur
+const Partenaire = require("../model/Partenaire");  
 
 router.post("/", async (req, res) => {  
     // create new association

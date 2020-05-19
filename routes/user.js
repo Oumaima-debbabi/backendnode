@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 var fs = require("fs");
 const multer = require('multer');
 const upload = multer({dest: __dirname + '/uploads/images'});
+const UserController = require('../controller/UserController');
 
 router.post("/register", async (req, res) => {
   // checking user email id in database
@@ -26,13 +27,14 @@ router.post("/register", async (req, res) => {
     email: req.body.email,
     password: hashedPassword,
     statut:req.body.statut,
-civilite: req.body.civilite,
-prenom:req.body.prenom,
-adresse: req.body.adresse,
-numero_telephone:req.body.numero_telephone,
-code_postal:req.body.code_postal,
-annee_naissance:req.body.date_naissance,
-profession:req.body.profession,
+   civilite: req.body.civilite,
+      prenom:req.body.prenom,
+    adresse: req.body.adresse,
+    numero_telephone:req.body.numero_telephone,
+    code_postal:req.body.code_postal,
+   annee_naissance:req.body.date_naissance,
+     profession:req.body.profession,
+   role:req.body.role
   });
 
   try {
@@ -43,20 +45,6 @@ profession:req.body.profession,
   }
 });
 
-// user login
-router.post("/login", async (req, res) => {
-  // checking user email id in database
-  const user = await User.findOne({ email: req.body.email });
-  if (!user) return res.status(400).send("Email is wrong");
-
-  // checking password
-  const validPass = await bcrypt.compare(req.body.password, user.password);
-  if (!validPass) return res.status(400).send("Invalid password");
-
-  // creat and assign a token
-  const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
-  res.header("auth-token", token).send({ token: token });
-});
 router.post("/updatePhoto/:userId",upload.single('Photo'),async (req, res)=>{
   console.log('file', req.file);
   console.log('id', req.params.userId);
@@ -119,4 +107,26 @@ router.post("/updateProfil/:userId",upload.single('Photo'),async (req, res) =>{
 
 },
 )
+router.get('/getAll',UserController.allowIfLoggedin,UserController.grantAccess('readAny', 'profile'), UserController.getAll);
+//router.post('/login', UserController.login);
+router.delete('/user/:userId', UserController.allowIfLoggedin,
+UserController.grantAccess('deleteAny', 'profile'), UserController.deleteUser);
+router.post("/login", async (req, res) => {
+  // checking user email id in database
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) return res.status(400).send("Email is wrong");
+
+  // checking password
+  const validPass = await bcrypt.compare(req.body.password, user.password);
+  if (!validPass) return res.status(400).send("Invalid password");
+
+  // creat and assign a token
+  //const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
+  const token = jwt.sign({ userId: user._id }, process.env.TOKEN_SECRET, {
+          expiresIn: "1d"
+       });
+  res.header("auth-token", token).send({ token: token, email:user.email,name:user.name,role:user.role,profession:user.profession,prenom:user.prenom,
+  adresse:user.adresse});
+     
+})
 module.exports = router;

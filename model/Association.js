@@ -1,20 +1,19 @@
 const mongoose = require("mongoose");
 const Schema= mongoose.Schema
-const associationSchema = new Schema({
- 
+var User =require("./User")
+
+const associationSchema = User.discriminator("Association",new Schema({
+ nombre_membre:Number,
 nom_association: String,
-email: String,
-nom_responsable: String,
-adresse: String,
+adresse_asso: String,
 numero_association: String,
 code_postal: String,
-password: String,
 date_creation: String,
 secteur:[{
   type:String,
   ref:'secteur'}
 ],
 image:String
-});
+}));
 
-module.exports = mongoose.model("Association", associationSchema);
+module.exports = mongoose.model("Association");

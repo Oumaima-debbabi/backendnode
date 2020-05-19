@@ -13,7 +13,14 @@ password:String,
 annee_naissance:String,
 profession:String,
 photo:String,
-
+role: {
+    type: String,
+    default: 'basic',
+    enum: ["basic", "supervisor", "admin"]
+  },
+  
+  
+  dateCreated: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model("User", userSchema);
