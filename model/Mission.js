@@ -10,7 +10,10 @@ date:String,
 datefin:String,
 type:String,
 Photo:String,
-action:String
+description:String,
+nom_association:String,
+qd:String,
+dateCreated: { type: Date, default: Date.now },
 
 });
 

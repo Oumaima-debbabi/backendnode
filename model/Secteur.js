@@ -10,6 +10,7 @@ const secteurSchema = new mongoose.Schema({
 		trim: true,		
 		required: true,
 	},
+	dateCreated: { type: Date, default: Date.now },
 
 });
 

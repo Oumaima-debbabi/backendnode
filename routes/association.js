@@ -86,7 +86,14 @@ router.get("/", async (req, res) => {
     res.json({ message: error });
   }
 });
-
+router.get("/get", async (req, res) => {
+  try {
+    const associations = await Association.find().limit(8);
+    res.json(associations);
+  } catch (error) {
+    res.json({ message: error });
+  }
+});
 // Single association
 router.get("/:associationId", async (req, res) => {
   try {
@@ -97,7 +104,15 @@ router.get("/:associationId", async (req, res) => {
     res.json({ message: error });
   }
 });
-
+router.get("/search/:associationNom_association", async (req, res) => {
+  try {
+    const association = await Association.findOne(req.params.nom_association);
+    res.json(association);
+  } 
+    catch (error) {
+    res.json({ message: error });
+  }
+});
 router.put("/:AssoicationId", async (req, res) => {
   try {
     const Assoication = {

@@ -2,7 +2,10 @@ const router = require("express").Router();
 const Admin = require("../model/Admin");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+var nodemailer = require('nodemailer');
+var crypto = require('crypto');
 
+const config = require('config.json');
 const fs=require('fs');
 const multer=require('multer');
 const upload=multer({dest:__dirname+"/uploads/images"})
@@ -64,12 +67,42 @@ role:"admin",
 
   try {
     const savedAdmin= await admin.save();
-    res.send(savedAdmin).populate(user)
+    res.send(savedAdmin).populate(user);
+    var transporter = nodemailer.createTransport({ service: 'Sendgrid'});
+    var mailOptions = { from: 'debbabimimii@gmail.com', to: admin.email, subject: 'Account Verification Token', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/confirmation\/' + token.token + '.\n' };
+    transporter.sendMail(mailOptions, function (err) {
+        if (err) { return res.status(500).send({ msg: err.message }); }
+        res.status(200).send('A verification email has been sent to ' + admin.email + '.');
+    });
   } catch (error) {
     res.status(400).send(error);
   }
 });
+// router.post("/sendVerificationEmail",function (req, res) {
+//   let message;
+//   if (req) {
+//       message = `<p>Please click the below link to verify your email address:</p>
+//                  <p><a href="hello"</a></p>`;
+//   } else {
+//       message = `<p>Please use the below token to verify your email address with the <code>/account/verify-email</code> api route:</p>
+//                  <p><code>"hello"</code></p>`;
+//   }
+//   sendEmail({
+//     to: req.query.email,
+//     subject: 'Sign-up Verification API - Verify Email',
+//     html: `<h4>Verify Email</h4>
+//            <p>Thanks for registering!</p>
+//            ${message}`
+// });
 
+ 
+// })
+// module.exports = sendEmail;
+
+// function sendEmail({ to, subject, html, from = config.emailFrom }) {
+//     const transporter = nodemailer.createTransport(config.smtpOptions);
+//     transporter.sendMail({ from, to, subject, html });
+// }
 // association login
 // router.post("/login", async (req, res) => {
 //   // checking association email id in database
@@ -158,5 +191,56 @@ code_postal:req.body.code_postal,
     res.json({ message: error });
   }
   });
+//   router.post('/sendemail', function(req,res){
 
+//     Admin.find({email:req.query.email}, function(err, result){
+//       console.log(result.length)
+//       res.send(result)
+//       if(result.length != 0){
+  
+//         var transporter = nodemailer.createTransport({
+//           service: 'gmail',
+//           auth: {
+//             user: 'sadakacontactasso@gmail.com',
+//             pass: 'mdp'
+//           }
+//         });
+  
+  
+//         var mailOptions = {
+//           from: 'sadakacontactasso@gmail.com',
+//           to: req.query.email,
+//           subject: 'Sending Email using Node.js',
+//           text: 'hawaha email sadakacontactasso@gmail.com w password',
+//           html: '<htm><p>Votre adhésion a été prise en compte. </p>'+
+
+//              '<p>Veuillez activer votre compte</p>'+
+
+//          '<p><button>Cliquez ici</button></p>' +
+//            '<p>Pour valider votre adhésion, veuillez payer la cotisation annuelle.</p>' +
+ 
+
+//           '<p>RIB: TN59 1750 3000 0002 2957 9702</p>'+
+
+//           '<p>Regards,</p>'+
+//         ' <p>Association de Recherche Scientifique et Innovation en Informatique- ARSII</p>'+
+   
+// '</html>'
+  
+//         }
+  
+  
+//         transporter.sendMail(mailOptions, function(error, info){
+//           if (error) {
+//             console.log(error);
+//             res.json({yo: 'error'});
+//           } else {
+//             console.log('Email sent: '+ info.response);
+//             infor=info.response;
+//             res.json({yo: info.response});
+//           }
+//         });
+//       }
+//     })
+//   })
 module.exports = router;

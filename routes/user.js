@@ -125,8 +125,43 @@ router.post("/login", async (req, res) => {
   const token = jwt.sign({ userId: user._id }, process.env.TOKEN_SECRET, {
           expiresIn: "1d"
        });
-  res.header("auth-token", token).send({ token: token, email:user.email,name:user.name,role:user.role,profession:user.profession,prenom:user.prenom,
-  adresse:user.adresse});
+  res.header("auth-token", token).send({ token: token,
+     email:user.email,name:user.name,role:user.role,profession:user.profession,prenom:user.prenom,
+  adresse:user.adresse,date_naissance:user.date_naissance,
+_id:user._id
+});
      
 })
+router.post("/update/:id",function (req, res) {
+  User.findById(req.params.id, function(err, user) {
+    if (!user)
+    res.status(404).send("Record not found");
+    else {
+    user.name= req.body.name,
+    user.email= req.body.email,
+    user.statut=req.body.statut,
+    user.civilite= req.body.civilite,
+    user.prenom=req.body.prenom,
+    user.adresse= req.body.adresse,
+    user.numero_telephone=req.body.numero_telephone,
+    user.code_postal=req.body.code_postal,
+    user.annee_naissance=req.body.date_naissance,
+    user.profession=req.body.profession,
+    user.save().then(user => {
+      res.json('Update complete');
+    })
+    .catch(err => {
+        res.status(400).send("unable to update the database");
+    });
+    }
+  });
+  });
+  router.get("/:userId", async (req, res) => {
+		try {
+		  const user = await User.findById(req.params.userId);
+		  res.json(user);
+		} catch (error) {
+		  res.json({ message: error });
+		}
+	  });
 module.exports = router;

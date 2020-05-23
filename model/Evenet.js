@@ -6,7 +6,10 @@ nombre_preson:String,
 nom_res:String,
 lieu:String,
 date:String,
-contenu:String
+contenu:String,
+nom_association:String,
+dateCreated: { type: Date, default: Date.now },
+
 
 });
 

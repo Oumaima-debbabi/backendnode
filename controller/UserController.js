@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const { roles } = require('../roles')
 
 async function hashPassword(password) {
-  return await bcrypt.hash(password, 10);
+  return await bcrypt.hash(password, 8);
 }
 
 async function validatePassword(plainPassword, hashedPassword) {

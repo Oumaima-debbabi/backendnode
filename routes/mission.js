@@ -30,7 +30,8 @@ router.post("/", async (req, res) => {
   date:req.body.date,
   datefin:req.body.datefin,
   type:req.body.type,
-  action:req.body.action
+  description:req.body.description,
+  qd:req.body.qd
   });
 
   try {
@@ -59,7 +60,7 @@ router.post("/",upload.single('Photo'), function (req, res) {
 		  };
   
 		 mission = new Mission({
-       action:req.body.action,
+       description:req.body.description,
       sujet:req.body.sujet,
       besoin:req.body.besoin,
       nombre_preson:req.body.nombre_preson,
@@ -100,8 +101,8 @@ router.post("/",upload.single('Photo'), function (req, res) {
       mission.date=req.body.date,
       mission.datefin=req.body.datefin,
       mission.type=req.body.type,
-      mission.action=req.body.action,
-	  
+      mission.description=req.body.description,
+      mission.qd=req.body.qd,
 			mission.save().then(mission => {
 				res.json('Update complete');
 			})
@@ -119,6 +120,22 @@ router.get("/", async (req, res) => {
     res.json({ message: error });
   }
 });
+router.get("/get4", async (req, res) => {
+
+    try {
+      const missions = await Mission.find().limit(4);
+     
+      res.json(missions);
+   
+    }
+    
+    catch (error) {
+    res.json({ message: error });
+
+  }
+  
+
+});
 // Single mission
 
 router.put("/:missionId", async (req, res) => {
@@ -132,7 +149,7 @@ router.put("/:missionId", async (req, res) => {
       date:req.body.date,
       datefin:req.body.datefin,
       type:req.body.type,
-      action:req.body.action,
+      description:req.body.description,
     };
   
     const updatedMission = await Mission.findByIdAndUpdate(
@@ -155,7 +172,7 @@ router.put("/:missionId", async (req, res) => {
   // Delete Mission
   router.delete("/:missionId",async (req, res) => {
   try {
-    const removeMission = await Mission.findByIdAndDelete(req.params.MissionId);
+    const removeMission = await Mission.findByIdAndDelete(req.params.missionId);
     res.json(removeMission);
   } catch (error) {
     res.json({ message: error });

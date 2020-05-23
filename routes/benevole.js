@@ -65,6 +65,7 @@ router.post("/register", upload.single("image") ,async (req, res) => {
   try {
     const savedBenevole= await benevole.save();
     res.send(savedBenevole);
+  
   } catch (error) {
     res.status(400).send(error);
   }

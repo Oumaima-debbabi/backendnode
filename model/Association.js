@@ -13,6 +13,7 @@ secteur:[{
   type:String,
   ref:'secteur'}
 ],
+isVerified:{type:Boolean,default:false},
 image:String
 }));
 

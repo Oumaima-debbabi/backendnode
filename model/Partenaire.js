@@ -14,7 +14,8 @@ const partenaireSchema = new mongoose.Schema({
         type:String,
          trim:true,
          required:true,
-    }
+    },
+    dateCreated: { type: Date, default: Date.now },
 
 });
 
