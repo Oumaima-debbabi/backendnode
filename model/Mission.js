@@ -9,10 +9,10 @@ lieu:String,
 date:String,
 datefin:String,
 type:String,
-Photo:String,
 description:String,
 nom_association:String,
 qd:String,
+imageUrl:String,
 dateCreated: { type: Date, default: Date.now },
 
 });

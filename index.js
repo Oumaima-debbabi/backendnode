@@ -30,7 +30,10 @@ const benevoleRoutes=require("./routes/benevole");
 // Middlewares
 app.use(express.json());
 app.use(cors());
-app.use("/images", express.static(path.join("uplods/images")));
+
+
+app.use(express.static('public'))
+//app.use("/images", express.static(path.join("uplods/images")));
 // route Middlewares
 app.use("/api/user", userRoutes);
 app.use("/api/association",associationRoutes);

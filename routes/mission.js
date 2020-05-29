@@ -5,8 +5,10 @@ const jwt = require("jsonwebtoken");
 const verify = require("./verifyToken");
 var fs = require("fs")
 const multer = require('multer');
-const upload = multer({dest:__dirname + 'uploadsimages'});
+//const upload = multer({dest:__dirname + 'uploadsimages'});
 
+const upload = require('../middelware/upload')
+const mission = require('../controller/mission')
 
 router.get("/getById/:missionId", function(req, res) {
   console.log(req.body);
@@ -30,6 +32,8 @@ router.post("/", async (req, res) => {
   date:req.body.date,
   datefin:req.body.datefin,
   type:req.body.type,
+  action:req.body.action,
+  imageUrl:req.body.imageUrl,
   description:req.body.description,
   qd:req.body.qd
   });
@@ -41,7 +45,11 @@ router.post("/", async (req, res) => {
     res.status(400).send(error);
   }
 });
-router.post("/",upload.single('Photo'), function (req, res) {
+router.post('/upload', [
+  upload.single('image'),
+  mission.uploadFile
+])
+router.post("/imm",upload.single('image'), function (req, res) {
 	var file = __dirname + 'uploadsimages' + req.file.originalname;
   
 	fs.readFile(req.file.path, function (err, data) {
@@ -60,7 +68,7 @@ router.post("/",upload.single('Photo'), function (req, res) {
 		  };
   
 		 mission = new Mission({
-       description:req.body.description,
+       action:req.body.action,
       sujet:req.body.sujet,
       besoin:req.body.besoin,
       nombre_preson:req.body.nombre_preson,
@@ -69,7 +77,7 @@ router.post("/",upload.single('Photo'), function (req, res) {
       date:req.body.date,
       datefin:req.body.datefin,
       type:req.body.type,
-		Photo: req.file.originalname
+      imageUrl: req.file.originalname
 		  });
 		  mission.save(function (err) {
   
@@ -101,8 +109,8 @@ router.post("/",upload.single('Photo'), function (req, res) {
       mission.date=req.body.date,
       mission.datefin=req.body.datefin,
       mission.type=req.body.type,
-      mission.description=req.body.description,
-      mission.qd=req.body.qd,
+      mission.action=req.body.action,
+	  
 			mission.save().then(mission => {
 				res.json('Update complete');
 			})
@@ -112,32 +120,43 @@ router.post("/",upload.single('Photo'), function (req, res) {
 		  }
 		});
 	  });
-router.get("/", async (req, res) => {
+router.get("/get4", async (req, res) => {
   try {
-    const missions = await Mission.find();
+    const missions = await Mission.find().limit(4);
     res.json(missions);
   } catch (error) {
     res.json({ message: error });
   }
 });
-router.get("/get4", async (req, res) => {
+// Single mission
+// router.post("/addimage",upload.single("image"),function(req,res){
+//   var file=__dirname+"/uploads/images/"+req.file.originalname
+//   fs.readFile(req.file.path,function(err,data) {
+// fs.writeFile(file,data,function(err){
+//    if(err){
+//      console.error(err)
+//     var responce ={
+//       message:'sorry file couldnt  upload',
+//       filename:req.file.originalname,
+//     }}
 
-    try {
-      const missions = await Mission.find().limit(4);
-     
-      res.json(missions);
-   
-    }
-    
-    catch (error) {
-    res.json({ message: error });
+//    else
+//    {
+//      res.json({state:'ok',msg:'okkk ajouter'})
+ 
+//    }
+//  });
 
+//   }
+//   )
+// },)
+
+router.get("getfile/:image",function(req,res){
+  {
+res.sendFile(__dirname+'/uploads/images/'+req.params.image)
   }
   
-
-});
-// Single mission
-
+})
 router.put("/:missionId", async (req, res) => {
   try {
     const mission = {
@@ -149,7 +168,7 @@ router.put("/:missionId", async (req, res) => {
       date:req.body.date,
       datefin:req.body.datefin,
       type:req.body.type,
-      description:req.body.description,
+      action:req.body.action,
     };
   
     const updatedMission = await Mission.findByIdAndUpdate(
@@ -170,14 +189,20 @@ router.put("/:missionId", async (req, res) => {
 		}
 	  });
   // Delete Mission
-  router.delete("/:missionId",async (req, res) => {
-  try {
-    const removeMission = await Mission.findByIdAndDelete(req.params.missionId);
-    res.json(removeMission);
-  } catch (error) {
-    res.json({ message: error });
-  }
-  });
-
-
+  router.delete("/:missionId", async (req, res) => {
+    try {
+      const removeMission = await Mission.findByIdAndDelete(req.params.missionId);
+      res.json(removeMission);
+    } catch (error) {
+      res.json({ message: error });
+    }
+    });
+    router.get("/", async (req, res) => {
+      try {
+        const missions = await Mission.find();
+        res.json(missions);
+      } catch (error) {
+        res.json({ message: error });
+      }
+    });
 module.exports = router;

@@ -118,7 +118,7 @@ router.put("/:secteurId",verify, async (req, res) => {
 	}
   });
 	  
-	  router.get("/:secteurId", async (req, res) => {
+  router.get("/:secteurId", async (req, res) => {
 		try {
 		  const secteur = await Secteur.findById(req.params.secteurId);
 		  res.json(secteur);
@@ -126,7 +126,7 @@ router.put("/:secteurId",verify, async (req, res) => {
 		  res.json({ message: error });
 		}
 	  });
-	  router.post("/update/:secteurId",verify,function (req, res) {
+  router.post("/update/:secteurId",verify,function (req, res) {
 		Secteur.findById(req.params.id, function(err, secteur) {
 		  if (!secteur)
 			res.status(404).send("Record not found");
