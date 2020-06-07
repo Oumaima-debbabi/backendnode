@@ -2,35 +2,38 @@ const router = require("express").Router();
 const Association = require("../model/Association");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Secteur = require("../model/Secteur");
 
 const fs=require('fs');
-const multer=require('multer');
-const upload=multer({dest:__dirname+"/uploads/images"})
+//const multer=require('multer');
+//const upload=multer({dest:__dirname+"/uploads/images"})
+const upload = require('../middelware/upload')
+const fileimg = require('../controller/mission');
 
 
-router.post("/addimage",upload.single("image"),function(req,res){
-  var file=__dirname+"/uploads/images/"+req.file.originalname
-  fs.readFile(req.file.path,function(err,data) {
-  fs.writeFile(file,data,function(err){
-   if(err){
-     console.error(err)
-    var responce ={
-    message:'sorry file couldnt  upload',
-    filename:req.file.originalname,
+// router.post("/addimage",upload.single("image"),function(req,res){
+//   var file=__dirname+"/uploads/images/"+req.file.originalname
+//   fs.readFile(req.file.path,function(err,data) {
+//   fs.writeFile(file,data,function(err){
+//    if(err){
+//      console.error(err)
+//     var responce ={
+//     message:'sorry file couldnt  upload',
+//     filename:req.file.originalname,
 
-    }}
+//     }}
   
-   else
-   {
-     res.json({state:'ok',msg:'okkk ajouter'})
+//    else
+//    {
+//      res.json({state:'ok',msg:'okkk ajouter'})
    
-   }
-   });
+//    }
+//    });
  
-  }
-  )
- })
-router.post("/register", upload.single("image") ,async (req, res) => {
+//   }
+//   )
+//  })
+router.post("/register", upload.single('imageUrl'),async (req, res)  => {
   // checking association email id in database
   const emailExit = await Association.findOne({
     email: req.body.email
@@ -51,36 +54,70 @@ router.post("/register", upload.single("image") ,async (req, res) => {
     email: req.body.email,
     password: hashedPassword,
     statut:req.body.statut,
-civilite: req.body.civilite,
-prenom:req.body.prenom,
-adresse: req.body.adresse,
-numero_telephone:req.body.numero_telephone,
-code_postal:req.body.code_postal,
-annee_naissance:req.body.date_naissance,
-profession:req.body.profession,
-role:req.body.role,
+    civilite: req.body.civilite,
+    prenom:req.body.prenom,
+    adresse: req.body.adresse,
+    numero_telephone:req.body.numero_telephone,
+    code_postal:req.body.code_postal,
+    annee_naissance:req.body.annee_naissance,
+    profession:req.body.profession,
+   role:req.body.role,
  nom_association: req.body.nom_association,
  numero_association:req.body.numero_association,
 date_creation:req.body.date_creation,
-code_postal:req.body.code_postal,
  adresse_asso: req.body.adresse_asso,
- password:hashedPassword,
 secteur:req.body.secteur,
+imageUrl:req.body.imageUrl,
+
   });
 
   try {
     const savedAssociation= await association.save();
-    res.send(savedAssociation).populate('Secteur');
+    res.send(savedAssociation);
   } catch (error) {
     res.status(400).send(error);
   }
 });
 
+router.get(	"/getAll", function(req, res, next) {
 
+  Association.find({}).populate("secteur","-__v").
+  exec(function(err, associations){
+    if (err){
+      next(err);
+    } else{
 
+      res.json({status:"success", message: "associations list found!!!", data:{associations}});
+
+    }
+
+  }
+  );
+
+},)
+router.post("/after", upload.single('imageUrl'),async (req, res) => {  
+  // create new association 
+  const association = new Association({
+  lien:req.body.lien,
+  imageUrl:req.body.imageUrl,
+  });
+
+  try {
+    const savedAssociation = await association.save();
+    res.send(savedAssociation);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+router.post('/upload', [
+  upload.single('image'),
+  fileimg.uploadFile
+])
+router.post('/signup',fileimg.signup
+)
 router.get("/", async (req, res) => {
   try {
-    const associations = await Association.find();
+    const associations = await Association.find({});
     res.json(associations);
   } catch (error) {
     res.json({ message: error });
@@ -104,7 +141,7 @@ router.get("/:associationId", async (req, res) => {
     res.json({ message: error });
   }
 });
-router.get("/search/:associationNom_association", async (req, res) => {
+router.get("/search/:", async (req, res) => {
   try {
     const association = await Association.findOne(req.params.nom_association);
     res.json(association);
@@ -138,7 +175,40 @@ router.put("/:AssoicationId", async (req, res) => {
     res.json({ message: error });
   }
   });
-  
+  router.post("/update/:id", upload.single('imageUrl'),function (req, res) {
+		Association.findById(req.params.id, function(err, association) {
+		  if (!association)
+			res.status(404).send("Record not found");
+		  else {
+    association.lien=req.body.lien,
+    association.imageUrl=req.body.imageUrl
+	  
+			association.save().then(association => {
+				res.json('Update complete');
+			})
+			.catch(err => {
+				  res.status(400).send("unable to update the database");
+			});
+		  }
+		});
+	  });
+  router.put("/:AssoicationId", upload.single('imageUrl'),async (req, res) => {
+    try {
+      const Assoication = {
+      imageUrl: req.body.imageUrl,
+      lien:req.body.lien,
+
+      };
+    
+      const updatedAssoication = await Assoication.findByIdAndUpdate(
+      { _id: req.params.AssoicationId },
+      assoication
+      );
+      res.json(updatedAssoication);
+    } catch (error) {
+      res.json({ message: error });
+    }
+    });
   // Delete Assoication
   router.delete("/:associationId",async (req, res) => {
   try {
@@ -147,6 +217,7 @@ router.put("/:AssoicationId", async (req, res) => {
   } catch (error) {
     res.json({ message: error });
   }
+
   });
 
 module.exports = router;

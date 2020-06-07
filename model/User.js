@@ -13,6 +13,7 @@ password:String,
 annee_naissance:String,
 profession:String,
 photo:String,
+imageUrl : String,
 role: {
     type: String,
     default: 'basic',

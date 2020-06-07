@@ -2,35 +2,40 @@ const router = require("express").Router();
 const Benevole = require("../model/Benevole");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const User = require("../model/User");
 
 const fs=require('fs');
-const multer=require('multer');
-const upload=multer({dest:__dirname+"/uploads/images"})
+//const multer=require('multer');
+//const upload=multer({dest:__dirname+"/uploads/images"})
+const upload = require('../middelware/upload')
+const fileimg = require('../controller/mission');
+router.post('/upload', [
+  upload.single('image'),
+  fileimg.uploadFile
+])
+// router.post("/addimage",upload.single("image"),function(req,res){
+//   var file=__dirname+"/uploads/images/"+req.file.originalname
+//   fs.readFile(req.file.path,function(err,data) {
+//   fs.writeFile(file,data,function(err){
+//    if(err){
+//      console.error(err)
+//     var responce ={
+//     message:'sorry file couldnt  upload',
+//     filename:req.file.originalname,
 
-
-router.post("/addimage",upload.single("image"),function(req,res){
-  var file=__dirname+"/uploads/images/"+req.file.originalname
-  fs.readFile(req.file.path,function(err,data) {
-  fs.writeFile(file,data,function(err){
-   if(err){
-     console.error(err)
-    var responce ={
-    message:'sorry file couldnt  upload',
-    filename:req.file.originalname,
-
-    }}
+//     }}
   
-   else
-   {
-     res.json({state:'ok',msg:'okkk ajouter'})
+//    else
+//    {
+//      res.json({state:'ok',msg:'okkk ajouter'})
    
-   }
-   });
+//    }
+//    });
  
-  }
-  )
- })
-router.post("/register", upload.single("image") ,async (req, res) => {
+//   }
+//   )
+//  })
+router.post("/register",upload.single('imageUrl'),async (req, res) => {
   // checking association email id in database
   const emailExit = await User.findOne({
     email: req.body.email
@@ -55,10 +60,11 @@ router.post("/register", upload.single("image") ,async (req, res) => {
  adresse: req.body.adresse,
  numero_telephone:req.body.numero_telephone,
  code_postal:req.body.code_postal,
- annee_naissance:req.body.date_naissance,
+ annee_naissance:req.body.annee_naissance,
  profession:req.body.profession,
- role:req.body.role,
- association:req.body.association
+ imageUrl:req.body.imageUrl,
+ role:"benevole",
+ //association:req.body.association
 
   });
 
@@ -126,10 +132,11 @@ router.post("/update/:id",function (req, res) {
         benevole.adresse= req.body.adresse,
         benevole.numero_telephone=req.body.numero_telephone,
         benevole.code_postal=req.body.code_postal,
-        benevole.annee_naissance=req.body.date_naissance,
+        benevole.annee_naissance=req.body.annee_naissance,
         benevole.profession=req.body.profession,
         benevole.role=req.body.role,
         benevole.association=req.body.association,
+        benevole.imageUrl=req.body.imageUrl,
         benevole.isVerified = false;
 			benevole.save().then(benevole => {
 				res.json('Update complete');

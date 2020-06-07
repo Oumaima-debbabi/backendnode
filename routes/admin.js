@@ -58,7 +58,7 @@ prenom:req.body.prenom,
 adresse: req.body.adresse,
 numero_telephone:req.body.numero_telephone,
 code_postal:req.body.code_postal,
-annee_naissance:req.body.date_naissance,
+annee_naissance:req.body.annee_naissance,
 profession:req.body.profession,
 role:"admin",
 

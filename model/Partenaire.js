@@ -10,7 +10,7 @@ const partenaireSchema = new mongoose.Schema({
 		trim: true,		
 		required: true,
     },
-  Photo:{
+  imageUrl:{
         type:String,
          trim:true,
          required:true,

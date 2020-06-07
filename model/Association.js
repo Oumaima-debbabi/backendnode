@@ -1,6 +1,7 @@
-const mongoose = require("mongoose");
-const Schema= mongoose.Schema
+const Mongoose = require("mongoose");
+const Schema= Mongoose.Schema
 var User =require("./User")
+var Secteur =require("./Secteur")
 
 const associationSchema = User.discriminator("Association",new Schema({
  nombre_membre:Number,
@@ -9,12 +10,20 @@ adresse_asso: String,
 numero_association: String,
 code_postal: String,
 date_creation: String,
+email:String,
 secteur:[{
-  type:String,
-  ref:'secteur'}
-],
-isVerified:{type:Boolean,default:false},
-image:String
-}));
+    type:Schema.Types.ObjectId,
+    ref:'Secteur'
+}],
 
-module.exports = mongoose.model("Association");
+
+isVerified:{type:Boolean,default:false},
+imageUrl:String,
+couverture:String,
+lien:String,
+
+}),
+{collection:'associations'}
+);
+
+module.exports = Mongoose.model("Association");

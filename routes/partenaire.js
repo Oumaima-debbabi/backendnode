@@ -2,11 +2,17 @@ const router = require("express").Router();
 const verify = require("./verifyToken");
 const Partenaire = require("../model/Partenaire");  
 
-router.post("/", async (req, res) => {  
+const upload = require('../middelware/upload')
+const fileimg = require('../controller/mission');
+router.post('/upload', [
+	upload.single('image'),
+	fileimg.uploadFile
+  ])
+router.post("/", upload.single('imageUrl') , async (req, res) => {  
     // create new association
     const partenaire = new Partenaire({
       nom:req.body.nom,
-      photo:req.body.photo
+      imageUrl:req.body.imageUrl
     });
   
     try {
@@ -16,46 +22,7 @@ router.post("/", async (req, res) => {
       res.status(400).send(error);
     }
   });
-  router.post("/addpart",upload.single('Photo'), function (req, res) {
-	var file = __dirname + 'uploadsimages' + req.file.originalname;
-  
-	fs.readFile(req.file.path, function (err, data) {
-  
-	  fs.writeFile(file, data, function (err) {
-		if (err) {
-		  console.error(err);
-		  var response = {
-			message:'Sorry, file couldn\'t be uploaded.',
-		  filename:req.file.originalname
-		};
-		} else {
-		  response = {
-			message:'File uploaded successfully',
-			filename:req.file.originalname
-		  };
-  
-		 partenaire = new Partenaire({
-			nom: req.body.nom,
-		
-		Photo: req.file.originalname
-		  });
-		  partenaire.save(function (err) {
-  
-			if (err) {
-			  console.log('erreur dajout utilisateur :', err);
-			  res.send({status: 400, message: err})
-			}
-			else {
-			  console.log('ok');
-			  res.send({status: 200, message: 'utilisateur créer'})
-			}
-		  });
-		}
-		});
-  
-  
-	})
-	})
+
   
 // // Get All secteurs
 
@@ -67,9 +34,24 @@ router.get("/", async (req, res) => {
     res.json({ message: error });
   }
 });
+router.post("/update/:id", upload.single('imageUrl'),function (req, res) {
+    Partenaire.findById(req.params.id, function(err, partenaire) {
+      if (!partenaire)
+      res.status(404).send("Record not found");
+      else {
+      
+      partenaire.nom=req.body.nom,
 
-
-	router.get("/getById", function(req, res) {
+      partenaire.save().then(partenaire => {
+        res.json('Update complete');
+      })
+      .catch(err => {
+          res.status(400).send("unable to update the database");
+      });
+      }
+    });
+    });
+router.get("/getById", function(req, res) {
 		console.log(req.body);
 		Partenaire.findById(req.params.partenaireId, function(err, partenaireInfo){
 			if (err) {
@@ -94,20 +76,6 @@ router.get("/getAll", function(req, res,) {
 		});
 	})
 
-router.post("/create", function(req, res, next) {
-		
-		Partenaire.create({
-      nom:req.body.nom,
-      photo:req.body.photo
-      },
-            function (err, result) {
-				  if (err) 
-				  	next(err);
-				  else
-				  	res.json({status: "success", message: "secteur added successfully!!!", data: null});
-				  
-				});
-	},)
 router.put("/:partenaireId", async (req, res) => {
 		try {
 		  const partenaire = {
@@ -125,7 +93,7 @@ router.put("/:partenaireId", async (req, res) => {
 		}
 	  });  
 	  // Delete partenaire
-	  router.delete("/:partenaireId",async (req, res) => {
+router.delete("/:partenaireId",async (req, res) => {
 		try {
 		  const removePartenaire = await Partenaire.findByIdAndDelete(req.params.partenaireId);
 		  res.json(removePartenaire);

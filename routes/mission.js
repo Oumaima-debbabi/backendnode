@@ -6,10 +6,33 @@ const verify = require("./verifyToken");
 var fs = require("fs")
 const multer = require('multer');
 //const upload = multer({dest:__dirname + 'uploadsimages'});
-
+///const cloudinary = require('cloudinary')
 const upload = require('../middelware/upload')
-const mission = require('../controller/mission')
+//require('../middelware/cloudinary')
 
+const mission = require('../controller/mission');
+
+// router.post('/mission', upload.single('image'), async (req, res) => {
+//   const result = await cloudinary.v2.uploader.upload(req.file.path)
+//   const mission = new Mission()
+//   mission.sujet=req.body.sujet,
+//   mission.besoin=req.body.besoin,
+//   mission.nombre_preson=req.body.nombre_preson,
+//   mission.nom_association1=req.body.nom_association1,
+//   mission.lieu=req.body.lieu,
+//   mission.date=req.body.date,
+//   mission.datefin=req.body.datefin,
+//   mission.type=req.body.type,
+//   mission.action=req.body.action,
+ 
+//   mission.description=req.body.description,
+//   mission.qd=req.body.qd
+//   mission.imageUrl = result.secure_url
+//   await mission.save()
+//   res.send({
+//     message: 'mission is Created'
+//   })
+// })
 router.get("/getById/:missionId", function(req, res) {
   console.log(req.body);
   Mission.findById(req.params.missionId, function(err,missionInfo){
@@ -21,13 +44,13 @@ router.get("/getById/:missionId", function(req, res) {
   });
 })
 
-router.post("/", async (req, res) => {  
-  // create new association
+router.post("/", upload.single('imageUrl'),async (req, res) => {  
+  // create new association 
   const mission = new Mission({
         sujet:req.body.sujet,
   besoin:req.body.besoin,
   nombre_preson:req.body.nombre_preson,
-  nom_res:req.body.nom_res,
+  nom_association1:req.body.nom_association1,
   lieu:req.body.lieu,
   date:req.body.date,
   datefin:req.body.datefin,
@@ -39,8 +62,8 @@ router.post("/", async (req, res) => {
   });
 
   try {
-    const savedMission= await mission.save();
-    res.send(savedMission);
+    const saveMission = await mission.save();
+    res.send(saveMission);
   } catch (error) {
     res.status(400).send(error);
   }
@@ -50,7 +73,7 @@ router.post('/upload', [
   mission.uploadFile
 ])
 router.post("/imm",upload.single('image'), function (req, res) {
-	var file = __dirname + 'uploadsimages' + req.file.originalname;
+	var file = __dirname + 'uploads/images' + req.file.originalname;
   
 	fs.readFile(req.file.path, function (err, data) {
   
@@ -67,12 +90,12 @@ router.post("/imm",upload.single('image'), function (req, res) {
 			filename:req.file.originalname
 		  };
   
-		 mission = new Mission({
+		const mission = new Mission({
        action:req.body.action,
       sujet:req.body.sujet,
       besoin:req.body.besoin,
       nombre_preson:req.body.nombre_preson,
-      nom_res:req.body.nom_res,
+      nom_association1:req.body.nom_association1,
       lieu:req.body.lieu,
       date:req.body.date,
       datefin:req.body.datefin,
@@ -104,7 +127,7 @@ router.post("/imm",upload.single('image'), function (req, res) {
 			mission.sujet=req.body.sujet,
       mission.besoin=req.body.besoin,
       mission.nombre_preson=req.body.nombre_preson,
-      mission.nom_res=req.body.nom_res,
+      mission.nom_association1=req.body.nom_association1,
       mission.lieu=req.body.lieu,
       mission.date=req.body.date,
       mission.datefin=req.body.datefin,
@@ -163,7 +186,7 @@ router.put("/:missionId", async (req, res) => {
       sujet:req.body.sujet,
       besoin:req.body.besoin,
       nombre_preson:req.body.nombre_preson,
-      nom_res:req.body.nom_res,
+      nom_association1:req.body.nom_association1,
       lieu:req.body.lieu,
       date:req.body.date,
       datefin:req.body.datefin,
@@ -205,4 +228,5 @@ router.put("/:missionId", async (req, res) => {
         res.json({ message: error });
       }
     });
+    
 module.exports = router;

@@ -11,7 +11,7 @@ ref:'association'
 
 isVerified: { type: Boolean, default: false },
 
-image:String
+imageUrl:String
 }));
 
 module.exports = mongoose.model("Benevole");
