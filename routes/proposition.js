@@ -28,7 +28,8 @@ const UserController = require('../controller/UserController');
        description:req.body.description,
        type:req.body.type,
         lieu:req.body.lieu,
-        precision:req.body.precision
+		precision:req.body.precision,
+		creator:req.user.userId
 		});
 	  
 		try {
@@ -41,24 +42,31 @@ const UserController = require('../controller/UserController');
 	  
 	// // Get All propositions
 	
-	router.get("/", async (req, res) => {
+	router.get("/",verify, async (req, res) => {
 	  try {
-		const propositions = await Proposition.find();
+		const propositions = await Proposition.find({creator:req.user.userId}).populate("creator","-__v");
 		res.json(propositions);
 	  } catch (error) {
 		res.json({ message: error });
 	  }
 	});
-	
+	router.get("/all", async (req, res) => {
+		try {
+		  const propositions = await Proposition.find().populate("creator","-__v");
+		  res.json(propositions);
+		} catch (error) {
+		  res.json({ message: error });
+		}
+	  });
 router.get("/getAll", function(req, res,) {
 	
 
-		Proposition.find({}, function(err, propositions){
+		Proposition.find({creator:req.user.userId}, function(err, propositions){
 			if (err){
 				next(err);
 			} else{
 			
-				res.json({status:"success", message: "secteurs list found!!!", data:{propositions}});
+				res.json({status:"success", message: "propositons list found!!!", data:{propositions}});
 							
 			}
 
@@ -72,7 +80,8 @@ router.post("/create",verify,function(req, res, next) {
     description:req.body.description,
 type:req.body.type,
 lieu:req.body.lieu,
-       precision:req.body.precision
+	   precision:req.body.precision,
+	   creator:req.user.userId
 
       },
             function (err, result) {

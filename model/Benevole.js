@@ -10,8 +10,13 @@ ref:'association'
 }],
 
 isVerified: { type: Boolean, default: false },
+role: {
+    type: String,
+    default: 'benevole'
+  },
+imageUrl:String,
+missions:{type:[]}
 
-imageUrl:String
 }));
 
 module.exports = mongoose.model("Benevole");

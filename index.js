@@ -35,7 +35,7 @@ app.use(cors());
 
 app.use(express.static('public'))
 //app.use("/images", express.static(path.join("uplods/images")));
-// route Middlewares
+// route Middlewares mar
 app.use("/api/user", userRoutes);
 app.use("/api/association",associationRoutes);
 app.use("/api/secteur",secteurRoutes);

@@ -66,7 +66,7 @@ router.post("/register", upload.single('imageUrl'),async (req, res)  => {
  numero_association:req.body.numero_association,
 date_creation:req.body.date_creation,
  adresse_asso: req.body.adresse_asso,
-secteur:req.body.secteur,
+secteur1:req.body.secteurId,
 imageUrl:req.body.imageUrl,
 
   });
@@ -81,7 +81,7 @@ imageUrl:req.body.imageUrl,
 
 router.get(	"/getAll", function(req, res, next) {
 
-  Association.find({}).populate("secteur","-__v").
+  Association.find({}).populate("secteur1","-__v").
   exec(function(err, associations){
     if (err){
       next(err);
@@ -117,7 +117,7 @@ router.post('/signup',fileimg.signup
 )
 router.get("/", async (req, res) => {
   try {
-    const associations = await Association.find({});
+    const associations = await Association.find({}).populate("secteur1","-__v");
     res.json(associations);
   } catch (error) {
     res.json({ message: error });
@@ -125,7 +125,7 @@ router.get("/", async (req, res) => {
 });
 router.get("/get", async (req, res) => {
   try {
-    const associations = await Association.find().limit(8);
+    const associations = await Association.find().limit(8).populate("secteur1","-__v");
     res.json(associations);
   } catch (error) {
     res.json({ message: error });
@@ -162,7 +162,7 @@ router.put("/:AssoicationId", async (req, res) => {
     code_postal:req.body.code_postal,
      adresse: req.body.adresse,
   password:hashedPassword,
-  secteur:req.body.secteur,
+  secteur1:req.body.secteurId,
     
     };
   

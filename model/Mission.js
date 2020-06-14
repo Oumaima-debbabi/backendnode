@@ -12,13 +12,14 @@ datefin:String,
 type:String,
 description:String,
 qd:String,
-
+participants:{type:[]},
+creator: { type: Schema.Types.ObjectId, ref: 'User'},
 imageUrl:String,
 dateCreated: { type: Date, default: Date.now },
-nom_association1:[{
-    type: String,
+nom_association1:{
+    type:Schema.Types.ObjectId,
     ref : 'Association'
-}]
+}
 });
 
 module.exports = mongoose.model("Mission", missionSchema);

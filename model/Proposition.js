@@ -8,7 +8,8 @@ description:String,
 type:String,
 titre:String,
 precision:String,
-creator:String,
+creator:{type:Schema.Types.ObjectId,
+ref:'User'},
 dateCreated: { type: Date, default: Date.now }
 
 });

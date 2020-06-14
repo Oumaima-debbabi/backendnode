@@ -3,12 +3,15 @@ const Benevole = require("../model/Benevole");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../model/User");
+const Missionss = require('../routes/mission');
 
 const fs=require('fs');
 //const multer=require('multer');
 //const upload=multer({dest:__dirname+"/uploads/images"})
 const upload = require('../middelware/upload')
 const fileimg = require('../controller/mission');
+const { verify } = require("crypto");
+const Mission = require("../model/Mission");
 router.post('/upload', [
   upload.single('image'),
   fileimg.uploadFile
@@ -102,6 +105,7 @@ router.get("/", async (req, res) => {
 
 // Single association
 router.get("/:benevoleId", async (req, res) => {
+  
   try {
     const benevole = await Benevole.findById(req.params.benevoleId);
     res.json(benevole);
@@ -112,6 +116,7 @@ router.get("/:benevoleId", async (req, res) => {
   // Delete Assoication
  // Delete Mission
   router.delete("/:benevoleId",async (req, res) => {
+    
   try {
     const removeBenevole = await Benevole.findByIdAndDelete(req.params.benevoleId);
     res.json(removeBenevole);
@@ -146,6 +151,53 @@ router.post("/update/:id",function (req, res) {
 			});
 		  }
 		});
-	  });
+    });
+
+    router.get("/participer/:benevoleId/:missionId",async function (req, res) {
+    
+       try {
+           let missionId = req.params.missionId;
+           let benevoleId = req.params.benevoleId;
+           let benevole = await Benevole.findById(benevoleId)
+           //console.log(benevoleId)
+           let inmission = false;
+           let missionLength = benevole.missions.length;
+           for (let i = 0; i < missionLength; i++) {
+               if (benevole.missions[i].missionId === missionId) {
+                 inmission = true;
+                   break;
+               }
+               //console.log(missionId)
+           }
+           if (!inmission) {
+               benevole.missions.push({ missionId: missionId});
+                await benevole.save();
+               res.send({status:1,message:"Added Successfully"}).status(200);
+           } 
+      } catch (error) {
+           res.send(error);
+      }
+  },
+)
+router.get("/showmission/:benevoleId",async function (req, res) {
+  try {
+      let benevoleId = req.params.benevoleId;
+      let benevole = await Benevole.findById(benevoleId);
+      let temparray = [];
+      let missionLength = benevole.missions.length;
+      console.log(missionLength);
+      if (missionLength > 0) {
+          for (let i = 0; i < missionLength; i++) {
+              let missionId = benevole.missions[i].missionId;
+              let missiondetails = await Mission.findById(missionId);
+              temparray.push({mission:missiondetails});
+          }
+          res.send(temparray).status(200);
+      
+      } 
+  } catch (error) {
+      res.send("Internal Error").status(500);
+  }
+},)
 module.exports = router;
 

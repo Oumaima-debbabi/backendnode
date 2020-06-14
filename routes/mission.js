@@ -11,6 +11,8 @@ const upload = require('../middelware/upload')
 //require('../middelware/cloudinary')
 
 const mission = require('../controller/mission');
+const User = require("../model/User");
+const Association = require("../model/Association");
 
 // router.post('/mission', upload.single('image'), async (req, res) => {
 //   const result = await cloudinary.v2.uploader.upload(req.file.path)
@@ -44,13 +46,13 @@ router.get("/getById/:missionId", function(req, res) {
   });
 })
 
-router.post("/", upload.single('imageUrl'),async (req, res) => {  
+router.post("/",verify, upload.single('imageUrl'),async (req, res) => {  
   // create new association 
   const mission = new Mission({
         sujet:req.body.sujet,
   besoin:req.body.besoin,
   nombre_preson:req.body.nombre_preson,
-  nom_association1:req.body.nom_association1,
+  nom_association1:req.body.associationId,
   lieu:req.body.lieu,
   date:req.body.date,
   datefin:req.body.datefin,
@@ -58,7 +60,8 @@ router.post("/", upload.single('imageUrl'),async (req, res) => {
   action:req.body.action,
   imageUrl:req.body.imageUrl,
   description:req.body.description,
-  qd:req.body.qd
+  qd:req.body.qd,
+  creator:req.user.userId
   });
 
   try {
@@ -145,8 +148,19 @@ router.post("/imm",upload.single('image'), function (req, res) {
 	  });
 router.get("/get4", async (req, res) => {
   try {
-    const missions = await Mission.find().limit(4);
+    const missions = await Mission.find().limit(10).populate("nom_association1");
     res.json(missions);
+  } catch (error) {
+    res.json({ message: error });
+  }
+});
+router.get("/get4/:associationId", async function (req, res) {
+  try {
+  
+    const missions = await Mission.find({creator:req.params.id}).limit(10).populate("nom_association1");
+    res.json(missions);
+    console.log(associationId)
+
   } catch (error) {
     res.json({ message: error });
   }
@@ -174,12 +188,6 @@ router.get("/get4", async (req, res) => {
 //   )
 // },)
 
-router.get("getfile/:image",function(req,res){
-  {
-res.sendFile(__dirname+'/uploads/images/'+req.params.image)
-  }
-  
-})
 router.put("/:missionId", async (req, res) => {
   try {
     const mission = {
@@ -205,7 +213,7 @@ router.put("/:missionId", async (req, res) => {
   });
   router.get("/:missionId", async (req, res) => {
 		try {
-		  const mission = await Mission.findById(req.params.missionId);
+		  const mission = await Mission.findById(req.params.missionId).populate("nom_association1","-__v");
 		  res.json(mission);
 		} catch (error) {
 		  res.json({ message: error });
@@ -220,13 +228,70 @@ router.put("/:missionId", async (req, res) => {
       res.json({ message: error });
     }
     });
-    router.get("/", async (req, res) => {
+    router.get("/", verify,async (req, res) => {
       try {
-        const missions = await Mission.find();
+        const missions = await Mission.find({creator:req.user.userId}).populate("nom_association1","-__v").populate("creator");
         res.json(missions);
       } catch (error) {
         res.json({ message: error });
       }
     });
-    
+    router.get("/test/:creatorId",async (req, res) => {
+      try {
+        const missions = await Mission.find({creatorId:req.creator._id})
+        .populate("nom_association1","-__v").populate("creator");
+        res.json(missions);
+      } catch (error) {
+        res.json({ message: error });
+      }
+    });
+    router.get('/miss', verify, (req, res, next) => {
+      Mission.find({ creator: req.user.user._id })
+      
+        .exec((err, mission) => {
+          if (err) {
+            res.json({
+              success: false,
+              message: "Couldn't find your order"
+            });
+          } else {
+            res.json({
+              success: true,
+              message: 'Found your order',
+              mission: mission
+            });
+          }
+        });
+    });
+  
+    router.get("/particier/:missionId/:userId",verify,function(req ,res){
+      const missionId = req.params.missionId;
+      const userId=req.params.userId;
+  
+      Mission.findById({_id: missionId})
+        .select('userId')
+        .exec(function (err, data) {
+  
+          if (err) {
+  
+            console.log(err)
+  
+          }
+          const response = {
+            exist: data.filter(function(a){
+              return a.id === user.userId
+            })};
+            if (response.exist.length === 0 ){
+               res.send({ result: true })
+            }else{
+  
+                res.send({ result: false })
+              }
+  
+        })
+  
+  
+  
+    }
+)
 module.exports = router;

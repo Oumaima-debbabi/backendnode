@@ -54,4 +54,13 @@ exports.signup = (req, res) => {
    
   });
 };
-
+exports.getone =function(req, res) {
+  console.log(req.body);
+  Mission.findById(req.params.missionId, function(err,missionInfo){
+    if (err) {
+      next(err);
+    } else {
+      res.json({status:"success", message: "secteur found!!!", data:{missions: missionInfo}});
+    }
+  });
+}

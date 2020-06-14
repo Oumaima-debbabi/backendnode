@@ -11,16 +11,19 @@ numero_association: String,
 code_postal: String,
 date_creation: String,
 email:String,
-secteur:[{
+secteur1:[{
     type:Schema.Types.ObjectId,
     ref:'Secteur'
 }],
 
-
+role:{
+    type:String,default:'association'
+},
 isVerified:{type:Boolean,default:false},
 imageUrl:String,
 couverture:String,
 lien:String,
+description:String
 
 }),
 {collection:'associations'}
