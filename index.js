@@ -23,7 +23,7 @@ const secteurRoutes=require("./routes/secteur");
 const evenetRoutes=require("./routes/evenet");
 const missionRoutes=require("./routes/mission");
 const adminRoutes=require("./routes/admin");
-
+const SearchRoutes=require("./routes/recherche");
 const propositonRoutes=require("./routes/proposition");
 const benevoleRoutes=require("./routes/benevole");
 const partenaireRoutes=require("./routes/partenaire");
@@ -36,6 +36,8 @@ app.use(cors());
 app.use(express.static('public'))
 //app.use("/images", express.static(path.join("uplods/images")));
 // route Middlewares mar
+
+app.use('/api/search', SearchRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/association",associationRoutes);
 app.use("/api/secteur",secteurRoutes);

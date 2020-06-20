@@ -81,7 +81,7 @@ imageUrl:req.body.imageUrl,
 
 router.get(	"/getAll", function(req, res, next) {
 
-  Association.find({}).populate("secteur1","-__v").
+  Association.find().populate("secteur1","-__v").
   exec(function(err, associations){
     if (err){
       next(err);
@@ -117,7 +117,7 @@ router.post('/signup',fileimg.signup
 )
 router.get("/", async (req, res) => {
   try {
-    const associations = await Association.find({}).populate("secteur1","-__v");
+    const associations = await Association.find().populate("secteur1","-__v");
     res.json(associations);
   } catch (error) {
     res.json({ message: error });

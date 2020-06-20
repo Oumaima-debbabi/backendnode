@@ -75,23 +75,6 @@ router.get("/getAll", function(req, res,) {
 
 		});
 	})
-
-router.put("/:partenaireId", async (req, res) => {
-		try {
-		  const partenaire = {
-			type_activite: req.body.type_activite,
-			
-		  };
-	  
-		  const updatedPartenaire = await Partenaire.findByIdAndUpdate(
-			{ _id: req.params.partenaireId },
-			partenaire
-		  );
-		  res.json(updatedPartenaire);
-		} catch (error) {
-		  res.json({ message: error });
-		}
-	  });  
 	  // Delete partenaire
 router.delete("/:partenaireId",async (req, res) => {
 		try {

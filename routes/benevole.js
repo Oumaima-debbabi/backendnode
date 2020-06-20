@@ -67,6 +67,7 @@ router.post("/register",upload.single('imageUrl'),async (req, res) => {
  profession:req.body.profession,
  imageUrl:req.body.imageUrl,
  role:"benevole",
+ association:req.body.associationId
  //association:req.body.association
 
   });
@@ -96,12 +97,30 @@ router.post("/login", async (req, res) => {
 });
 router.get("/", async (req, res) => {
   try {
-    const benevoles = await Benevole.find();
+    const benevoles = await Benevole.find().populate("association","-__v");
     res.json(benevoles);
   } catch (error) {
     res.json({ message: error });
   }
 });
+
+
+//liste participants
+router.get("/getparticipant/:missionId", async (req, res) => {
+  try { 
+    const benevoles = await Benevole.find({missions:
+      {missionId:req.params.missionId}})
+    .populate("association","-__v");
+  
+    res.json(benevoles);
+  } catch (error) {
+    res.json({ message: error });
+  }
+});
+
+
+
+
 
 // Single association
 router.get("/:benevoleId", async (req, res) => {
@@ -179,15 +198,43 @@ router.post("/update/:id",function (req, res) {
       }
   },
 )
+router.get("/remove/:benevoleId/:missionId", async function(req,res){
+  try{
+      let benevoleId = req.params.benevoleId;
+    
+      let missionId = req.params.missionId;
+      let benevole = await Benevole.findById(benevoleId)
+      let temparray = [];
+      let missionLength = benevole.missions.length;
+      for(let i=0;i<missionLength;i++)
+      {
+          
+          if(benevole.missions[i].missionId===missionId){
+              //console.log('hello');
+              benevole.missions.splice(i,1);
+              //console.log(benevole.missions)
+              benevole.save();
+              break;
+          }
+      }
+      res.send(benevole.missions).status(200);
+
+
+  }catch(err)
+  {
+      res.send("Internal Server Erro").status(500);
+  }
+},)
 router.get("/showmission/:benevoleId",async function (req, res) {
   try {
       let benevoleId = req.params.benevoleId;
       let benevole = await Benevole.findById(benevoleId);
       let temparray = [];
       let missionLength = benevole.missions.length;
-      console.log(missionLength);
+      //console.log(missionLength);
       if (missionLength > 0) {
-          for (let i = 0; i < missionLength; i++) {
+          for (let i = 0; i < missionLength; i++) 
+          {
               let missionId = benevole.missions[i].missionId;
               let missiondetails = await Mission.findById(missionId);
               temparray.push({mission:missiondetails});

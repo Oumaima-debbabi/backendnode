@@ -3,11 +3,10 @@ const Schema= mongoose.Schema
 var User =require("./User")
 
 const benevoleSchema = User.discriminator("Benevole",new Schema({
-association:[{
-type:String,
-ref:'association'
-
-}],
+association:{
+  type:Schema.Types.ObjectId,
+  ref : 'Association'
+},
 
 isVerified: { type: Boolean, default: false },
 role: {

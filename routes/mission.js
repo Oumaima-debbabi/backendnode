@@ -75,53 +75,7 @@ router.post('/upload', [
   upload.single('image'),
   mission.uploadFile
 ])
-router.post("/imm",upload.single('image'), function (req, res) {
-	var file = __dirname + 'uploads/images' + req.file.originalname;
-  
-	fs.readFile(req.file.path, function (err, data) {
-  
-	  fs.writeFile(file, data, function (err) {
-		if (err) {
-		  console.error(err);
-		  var response = {
-			message:'Sorry, file couldn\'t be uploaded.',
-		  filename:req.file.originalname
-		};
-		} else {
-		  response = {
-			message:'File uploaded successfully',
-			filename:req.file.originalname
-		  };
-  
-		const mission = new Mission({
-       action:req.body.action,
-      sujet:req.body.sujet,
-      besoin:req.body.besoin,
-      nombre_preson:req.body.nombre_preson,
-      nom_association1:req.body.nom_association1,
-      lieu:req.body.lieu,
-      date:req.body.date,
-      datefin:req.body.datefin,
-      type:req.body.type,
-      imageUrl: req.file.originalname
-		  });
-		  mission.save(function (err) {
-  
-			if (err) {
-			  console.log('erreur dajout utilisateur :', err);
-			  res.send({status: 400, message: err})
-			}
-			else {
-			  console.log('ok');
-			  res.send({status: 200, message: 'utilisateur créer'})
-			}
-		  });
-		}
-		});
-  
-  
-	})
-	})
+
   router.post("/update/:id",function (req, res) {
 		Mission.findById(req.params.id, function(err, mission) {
 		  if (!mission)
@@ -149,6 +103,14 @@ router.post("/imm",upload.single('image'), function (req, res) {
 router.get("/get4", async (req, res) => {
   try {
     const missions = await Mission.find().limit(10).populate("nom_association1");
+    res.json(missions);
+  } catch (error) {
+    res.json({ message: error });
+  }
+});
+router.get("/getmissions", async (req, res) => {
+  try {
+    const missions = await Mission.find().populate("nom_association1");
     res.json(missions);
   } catch (error) {
     res.json({ message: error });
@@ -238,31 +200,31 @@ router.put("/:missionId", async (req, res) => {
     });
     router.get("/test/:creatorId",async (req, res) => {
       try {
-        const missions = await Mission.find({creatorId:req.creator._id})
+        const missions = await Mission.find({creator:Object(req.params.creatorId)})
         .populate("nom_association1","-__v").populate("creator");
         res.json(missions);
       } catch (error) {
         res.json({ message: error });
       }
     });
-    router.get('/miss', verify, (req, res, next) => {
-      Mission.find({ creator: req.user.user._id })
+    // router.get('/miss', verify, (req, res, next) => {
+    //   Mission.find({ creator: req.user.user._id })
       
-        .exec((err, mission) => {
-          if (err) {
-            res.json({
-              success: false,
-              message: "Couldn't find your order"
-            });
-          } else {
-            res.json({
-              success: true,
-              message: 'Found your order',
-              mission: mission
-            });
-          }
-        });
-    });
+    //     .exec((err, mission) => {
+    //       if (err) {
+    //         res.json({
+    //           success: false,
+    //           message: "Couldn't find your order"
+    //         });
+    //       } else {
+    //         res.json({
+    //           success: true,
+    //           message: 'Found your order',
+    //           mission: mission
+    //         });
+    //       }
+    //     });
+    // });
   
     router.get("/particier/:missionId/:userId",verify,function(req ,res){
       const missionId = req.params.missionId;

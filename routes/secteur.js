@@ -9,7 +9,7 @@ const UserController = require('../controller/UserController');
  module.exports = router;
 
 	
-	router.get("/getById",verify, function(req, res) {
+	router.get("/getById", function(req, res) {
 		console.log(req.body);
 		Secteur.findById(req.params.secteurId, function(err, secteurInfo){
 			if (err) {
@@ -20,7 +20,7 @@ const UserController = require('../controller/UserController');
 		});
 	})
 
-	router.post("/",verify, async (req, res) => {  
+	router.post("/", async (req, res) => {  
 		// create new association
 		const secteur = new Secteur({
 		  type_activite:req.body.type_activite
@@ -60,7 +60,7 @@ router.get("/getAll", function(req, res,) {
 		});
 	})
 
-router.post("/create",verify,function(req, res, next) {
+router.post("/create",function(req, res, next) {
 		
 		Secteur.create({
        type_activite:req.body.type_activite
@@ -73,25 +73,25 @@ router.post("/create",verify,function(req, res, next) {
 				  
 				});
 	},)
-	// router.put("/edit/:secteurId", async (req, res) => {
-	// 	try {
-	// 	  const secteur = {
-	// 		type_activite: req.body.type_activite,
+	router.put("/edit/:secteurId", async (req, res) => {
+		try {
+		  const secteur = {
+			type_activite: req.body.type_activite,
 	
-	// 	  };
+		  };
 	  
-	// 	  const updatedSecteur = await Secteur.findByIdAndUpdate(
-	// 		{ _id: req.params.secteurId },
-	// 		secteur
-	// 	  );
-	// 	  res.json(updatedSecteur);
-	// 	} catch (error) {
-	// 	  res.json({ message: error });
-	// 	}
-	//   });
+		  const updatedSecteur = await Secteur.findByIdAndUpdate(
+			{ _id: req.params.secteurId },
+			secteur
+		  );
+		  res.json(updatedSecteur);
+		} catch (error) {
+		  res.json({ message: error });
+		}
+	  });
 	  
 // Update listing
-router.put("/:secteurId",verify, async (req, res) => {
+router.put("/:secteurId", async (req, res) => {
 	try {
 	  const secteur = {
 		type_activite: req.body.type_activite
@@ -109,7 +109,7 @@ router.put("/:secteurId",verify, async (req, res) => {
   });
   
   // Delete listing
-  router.delete("/:secteurId",verify, async (req, res) => {
+  router.delete("/:secteurId", async (req, res) => {
 	try {
 	  const removeSecteur = await Secteur.findByIdAndDelete(req.params.secteurId);
 	  res.json(removeSecteur);
@@ -126,7 +126,7 @@ router.put("/:secteurId",verify, async (req, res) => {
 		  res.json({ message: error });
 		}
 	  });
-  router.post("/update/:secteurId",verify,function (req, res) {
+  router.post("/update/:id",function (req, res) {
 		Secteur.findById(req.params.id, function(err, secteur) {
 		  if (!secteur)
 			res.status(404).send("Record not found");
