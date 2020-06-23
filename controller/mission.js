@@ -1,7 +1,5 @@
 const Association = require("../model/Association");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const Secteur = require("../model/Secteur");
 
 exports.uploadFile = (req, res) => {
   if (typeof req.file !== 'undefined') {
@@ -14,6 +12,7 @@ exports.uploadFile = (req, res) => {
     })
   }
 }
+
 
 exports.signup = (req, res) => {
   const association = new Association({

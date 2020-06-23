@@ -102,7 +102,7 @@ router.post('/upload', [
 	  });
 router.get("/get4", async (req, res) => {
   try {
-    const missions = await Mission.find().limit(10).populate("nom_association1");
+    const missions = await Mission.find().limit(12).populate("nom_association1");
     res.json(missions);
   } catch (error) {
     res.json({ message: error });
@@ -110,7 +110,7 @@ router.get("/get4", async (req, res) => {
 });
 router.get("/getmissions", async (req, res) => {
   try {
-    const missions = await Mission.find().populate("nom_association1");
+    const missions = await Mission.find({}).populate("nom_association1");
     res.json(missions);
   } catch (error) {
     res.json({ message: error });

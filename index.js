@@ -27,6 +27,7 @@ const SearchRoutes=require("./routes/recherche");
 const propositonRoutes=require("./routes/proposition");
 const benevoleRoutes=require("./routes/benevole");
 const partenaireRoutes=require("./routes/partenaire");
+const emailRoutes=require("./routes/sendEmail");
 
 // Middlewares
 app.use(express.json());
@@ -46,6 +47,8 @@ app.use("/api/evenet",evenetRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/partenaire", partenaireRoutes);
 app.use("/api/proposition", propositonRoutes);
-app.use("/api/benevole", benevoleRoutes)
+app.use("/api/benevole", benevoleRoutes);
+app.use("/api/email", emailRoutes)
+
 
 app.listen(4000, () => console.log("server up and runing on port 4000!"));
