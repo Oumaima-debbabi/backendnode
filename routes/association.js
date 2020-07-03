@@ -125,7 +125,7 @@ router.get("/", async (req, res) => {
 });
 router.get("/get", async (req, res) => {
   try {
-    const associations = await Association.find().limit(8).populate("secteur1","-__v");
+    const associations = await Association.find().limit(10).populate("secteur1","-__v");
     res.json(associations);
   } catch (error) {
     res.json({ message: error });
@@ -163,6 +163,7 @@ router.put("/:AssoicationId", async (req, res) => {
      adresse: req.body.adresse,
   password:hashedPassword,
   secteur1:req.body.secteurId,
+  description:req.body.description
     
     };
   
@@ -175,13 +176,13 @@ router.put("/:AssoicationId", async (req, res) => {
     res.json({ message: error });
   }
   });
-  router.post("/update/:id", upload.single('imageUrl'),function (req, res) {
+  router.post("/update/:id",function (req, res) {
 		Association.findById(req.params.id, function(err, association) {
 		  if (!association)
 			res.status(404).send("Record not found");
 		  else {
     association.lien=req.body.lien,
-    association.imageUrl=req.body.imageUrl
+    association.description=req.body.description
 	  
 			association.save().then(association => {
 				res.json('Update complete');

@@ -2,7 +2,8 @@ const router = require("express").Router();
 const User = require("../model/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
+var crypto = require('crypto');
+var nodemailer = require('nodemailer');
 var fs = require("fs");
 const multer = require('multer');
 //const upload = multer({dest: __dirname + '/uploads/images'});
@@ -48,10 +49,13 @@ router.post("/register",async (req, res) => {
 
   try {
     const savedUser = await user.save();
-    res.send(savedUser);
-  } catch (error) {
+    
+  
+  }
+  catch (error) {
     res.status(400).send(error);
   }
+
 });
 // router.post("/update/:id", upload.single('imageUrl'),function (req, res) {
 //   Association.findById(req.params.id, function(err, association) {
@@ -134,8 +138,7 @@ router.post("/register",async (req, res) => {
 //)
 router.get('/getAll', UserController.getAll);
 //router.post('/login', UserController.login);
-router.delete('/user/:userId', UserController.allowIfLoggedin,
-UserController.grantAccess('deleteAny', 'profile'), UserController.deleteUser);
+router.delete('/user/:userId', UserController.deleteUser);
 router.post("/login", async (req, res) => {
   // checking user email id in database
   const user = await User.findOne({ email: req.body.email });
@@ -151,8 +154,10 @@ router.post("/login", async (req, res) => {
           expiresIn: "1d"
        });
   res.header("auth-token", token).send({ token: token,
-     email:user.email,name:user.name,role:user.role,profession:user.profession,prenom:user.prenom,
-  adresse:user.adresse,annee_naissance:user.annee_naissance,
+     email:user.email,name:user.name,role:user.role,
+     profession:user.profession,prenom:user.prenom,
+  adresse:user.adresse,annee_naissance:user.annee_naissance,imageUrl:user.imageUrl,
+  numero_telephone:user.numero_telephone,
 _id:user._id
 });
      
@@ -180,9 +185,7 @@ router.post("/updatePhoto/:id", upload.single('imageUrl'),function (req, res) {
       if (!user)
       res.status(404).send("Record not found");
       else {
-      user.imageUrl= req.body.imageUrl,
       user.name= req.body.name,
-      user.email= req.body.email,
       user.statut=req.body.statut,
       user.civilite= req.body.civilite,
       user.prenom=req.body.prenom,

@@ -29,7 +29,8 @@ const UserController = require('../controller/UserController');
        type:req.body.type,
         lieu:req.body.lieu,
 		precision:req.body.precision,
-		creator:req.user.userId
+		creator:req.user.userId,
+		etat:"disponible"
 		});
 	  
 		try {
@@ -149,12 +150,13 @@ router.put("/:propositionId",verify, async (req, res) => {
 		  if (!proposition)
 			res.status(404).send("Record not found");
 		  else {
-			
+			 
             proposition.titre=req.body.titre,
             proposition.description=req.body.description,
 			proposition.type=req.body.type,
 			proposition.lieu=req.body.lieu,
-		proposition.precision=req.body.precision
+		    proposition.precision=req.body.precision,
+            proposition.etat=req.body.etat
 	  
 			proposition.save().then(proposition => {
 				res.json('Update complete');

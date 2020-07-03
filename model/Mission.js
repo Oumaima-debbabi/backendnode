@@ -19,6 +19,9 @@ dateCreated: { type: Date, default: Date.now },
 nom_association1:{
     type:Schema.Types.ObjectId,
     ref : 'Association'
+},
+etat:{
+    type:String
 }
 });
 

@@ -8,20 +8,20 @@ router.post("/send", function(req,res){
         port:465,
         secure:true,
         auth:{
-            user:'contactchifco@gmail.com',
-            pass:'1234567890abc/'
+            user:'sadakaconatct@gmail.com',
+            pass:'123456789sadaka'
         },
        
     })
-    let mailOptions={
+ let mailOptions={
 from: data.email,
 to:data.emailasso,
 subject:`Message from ${data.email}`,
+text:'',
 html:`
-<h3> Les informations 
-</h3>
 <a>sujet: ${data.subject}</a>
-<p>${data.message}</p>
+<br>
+<p>${data.text}</p>
 <ul>
 </ul>
 `

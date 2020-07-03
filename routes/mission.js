@@ -61,7 +61,8 @@ router.post("/",verify, upload.single('imageUrl'),async (req, res) => {
   imageUrl:req.body.imageUrl,
   description:req.body.description,
   qd:req.body.qd,
-  creator:req.user.userId
+  creator:req.user.userId,
+  etat:"disponible"
   });
 
   try {
@@ -84,13 +85,12 @@ router.post('/upload', [
 			mission.sujet=req.body.sujet,
       mission.besoin=req.body.besoin,
       mission.nombre_preson=req.body.nombre_preson,
-      mission.nom_association1=req.body.nom_association1,
-      mission.lieu=req.body.lieu,
+     mission.lieu=req.body.lieu,
       mission.date=req.body.date,
       mission.datefin=req.body.datefin,
       mission.type=req.body.type,
       mission.action=req.body.action,
-	  
+	  mission.etat=req.body.etat
 			mission.save().then(mission => {
 				res.json('Update complete');
 			})
@@ -110,7 +110,7 @@ router.get("/get4", async (req, res) => {
 });
 router.get("/getmissions", async (req, res) => {
   try {
-    const missions = await Mission.find({}).populate("nom_association1");
+    const missions = await Mission.find({}).populate("nom_association1","-__v");
     res.json(missions);
   } catch (error) {
     res.json({ message: error });
@@ -192,7 +192,8 @@ router.put("/:missionId", async (req, res) => {
     });
     router.get("/", verify,async (req, res) => {
       try {
-        const missions = await Mission.find({creator:req.user.userId}).populate("nom_association1","-__v").populate("creator");
+        const missions = await Mission.find({creator:req.user.userId}).
+        populate("nom_association1","-__v").populate("creator");
         res.json(missions);
       } catch (error) {
         res.json({ message: error });

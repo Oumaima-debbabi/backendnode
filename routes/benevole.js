@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../model/User");
 const Missionss = require('../routes/mission');
 
+var nodemailer = require('nodemailer');
 const fs=require('fs');
 //const multer=require('multer');
 //const upload=multer({dest:__dirname+"/uploads/images"})
@@ -111,7 +112,10 @@ router.get("/getparticipant/:missionId", async (req, res) => {
     const benevoles = await Benevole.find({missions:
       {missionId:req.params.missionId}})
     .populate("association","-__v");
-  
+      
+
+
+   
     res.json(benevoles);
   } catch (error) {
     res.json({ message: error });
@@ -187,12 +191,39 @@ router.post("/update/:id",function (req, res) {
                    break;
                }
                //console.log(missionId)
+
            }
            if (!inmission) {
                benevole.missions.push({ missionId: missionId});
-                await benevole.save();
-               res.send({status:1,message:"Added Successfully"}).status(200);
-           } 
+            await benevole.save();
+            let smtpTransport= nodemailer.createTransport({
+            service:'gmail',
+            port:465,
+            secure:true,
+            auth:{
+                 user:'sadakaconatct@gmail.com',
+                 pass:'123456789sadaka'
+             },
+            
+         })
+         
+            let mailOptions={
+            from: 'sadakaconatct@gmail.com',
+            to:benevole.email,
+            subject: `Votre participation à la mission est acceptée !`, 
+            html:'Bonjour' +benevole.name+ '  ' +benevole.prenom+' !!<br>Votre participation à la mission  est acceptée,N`hésitez pas à prendre contact avec le responsable de cette mission <br>  <h3>Sadaka </h3>' 
+         
+
+         };
+ 
+         smtpTransport.sendMail(mailOptions, function (err) {
+          if (err) { return res.status(500).send({ msg: err.message });
+          }
+          
+         // res.status(200).send('A verification email has been sent to ' + benevole.email + '.');
+          res.send({status:1,message:"Added Successfully" }).status(200);
+        })
+      } 
       } catch (error) {
            res.send(error);
       }

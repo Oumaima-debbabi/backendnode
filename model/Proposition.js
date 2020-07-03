@@ -10,8 +10,8 @@ titre:String,
 precision:String,
 creator:{type:Schema.Types.ObjectId,
 ref:'User'},
-dateCreated: { type: Date, default: Date.now }
-
+dateCreated: { type: Date, default: Date.now },
+etat:String
 });
 
 module.exports = mongoose.model("Proposition", propositionSchema);

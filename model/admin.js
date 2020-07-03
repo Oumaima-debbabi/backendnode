@@ -10,7 +10,7 @@ role: {
     type: String,
     default: 'admin'
   },
-image:String
+imageUrl:String
 }));
 
 module.exports = mongoose.model("Admin");
